@@ -1,119 +1,255 @@
-# Sistema de Análisis de Patrones Geoespaciales
-Desarrollar un sistema que analice datos geoespaciales utilizando paradigmas funcionales para identificar patrones espaciales. El sistema procesará coordenadas, calculará distancias, realizará agrupaciones y generará visualizaciones interactivas
+# 🌍 1: Sistema de Análisis de Patrones Geoespaciales
 
-###  OBJETIVOS DE APRENDIZAJE
-- Implementar funciones puras para cálculos geométricos
-- Aplicar inmutabilidad en estructuras de datos geoespaciales
-- Usar funciones de orden superior (map, filter, reduce)
-- Implementar composición de funciones para pipelines de transformación
-- Generar visualizaciones usando bibliotecas funcionales
+## 📋 Descripción del Proyecto
 
-###  PIPELINE DE DESARROLLO
+Sistema desarrollado con **programación funcional** para procesar, analizar y visualizar datos geoespaciales, identificando patrones territoriales mediante el uso de funciones puras, inmutabilidad y composición funcional.
 
-```
-Semana 1: Diseño Funcional y Funciones Básicas
-├── Día 1-2: Configuración del entorno y estructura del proyecto
-├── Día 3-4: Implementación de funciones puras para cálculos geométricos
-├── Día 5-6: Desarrollo de funciones de transformación de coordenadas
-└── Día 7: Testing y documentación de funciones básicas
+**Universidad de Colima - Ingeniería en Computación Inteligente**  
+**Materia**: Programación Funcional  
+**Profesor**: Gonzalez Zepeda Sebastian  
+**Semestre**: Agosto 2025 - Enero 2026
 
-Semana 2: Sistema de Procesamiento con Funciones de Orden Superior
-├── Día 1-2: Implementación de pipelines con map/filter/reduce
-├── Día 3-4: Creación de funciones de agregación de datos
-├── Día 5-6: Procesamiento de datasets grandes
-└── Día 7: Optimización y pruebas de rendimiento
+---
 
-Semana 3: Módulo de Agrupación y Análisis de Patrones
-├── Día 1-2: Algoritmos de clustering funcional
-├── Día 3-4: Detección de patrones espaciales
-├── Día 5-6: Análisis de proximidad y densidad
-└── Día 7: Validación de resultados
+## 🎯 Objetivos
 
-Semana 4: Visualización Interactiva y Documentación
-├── Día 1-2: Integración con bibliotecas de visualización
-├── Día 3-4: Creación de dashboards interactivos
-├── Día 5-6: Documentación técnica completa
-└── Día 7: Presentación final y entrega
-```
+- Aplicar **funciones de orden superior** (map, filter, reduce) en procesamiento de datos geográficos
+- Implementar **funciones puras** sin efectos secundarios
+- Utilizar **inmutabilidad** en estructuras de datos espaciales
+- Practicar **composición funcional** para pipelines de transformación
+- Desarrollar **lazy evaluation** para optimizar cálculos geoespaciales
+- Crear **funciones currying** para parametrización flexible
 
-### FUENTES DE CONSULTA (FORMATO APA 7)
+---
 
-#### Artículos Académicos
+## 🛠️ Tecnologías Utilizadas
 
-**1. Análisis Geoespacial y Programación Funcional**
+- **Lenguaje**: Python 3.11+
+- **Paradigma**: Programación Funcional
+- **Librerías**:
+  - `functools` - Herramientas funcionales
+  - `toolz` - Utilidades funcionales avanzadas
+  - `geopandas` - Procesamiento de datos geoespaciales
+  - `shapely` - Geometrías y operaciones espaciales
+  - `folium` - Visualización de mapas interactivos
 
-Dorman, M., Erell, E., Vulkan, A., & Kloog, I. (2020). Introducing shadow: R package for geometric shadow calculations in an urban environment. *Journal of Computational and Graphical Statistics*, 29(4), 1-23. https://doi.org/10.1080/10618600.2020.1812384
+---
 
-Pebesma, E., & Bivand, R. (2023). *Spatial Data Science: With Applications in R*. Chapman and Hall/CRC. https://r-spatial.org/book/
+## 📦 Instalación
 
-Wu, Q. (2024). *Introduction to GIS Programming: A Practical Python Guide to Open Source Geospatial Tools*. Independently published. ISBN 979-8286979455. https://gispro.gishub.org/
+```bash
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/analisis-geoespacial-funcional.git
+cd analisis-geoespacial-funcional
 
-#### Tutoriales y Documentación
-
-**2. GeoPandas y Análisis Espacial**
-
-GeoPandas Development Team. (2024). *GeoPandas documentation*. https://geopandas.org/
-
-Gandhi, U. (2024). *Python Foundation for Spatial Analysis*. Spatial Thoughts. https://courses.spatialthoughts.com/python-foundation.html
-
-Tenkanen, H., Heikinheimo, V., & Willberg, E. (2023). *Introduction to Python for Geographic Data Analysis*. https://pythongis.org/
-
-**3. Programación Funcional Aplicada**
-
-Lot, S. F. (2022). *Functional Python Programming* (3rd ed.). Packt Publishing.
-
-McClain, B. P. (2023). *Python for Geospatial Data Analysis*. O'Reilly Media. https://www.oreilly.com/library/view/python-for-geospatial/9781098104788/
-
-#### Videos Educativos
-
-**4. Recursos Multimedia**
-
-Wu, Q. (2024). *Introduction to GIS Programming Course* [Serie de videos]. YouTube. https://youtube.com/playlist?list=PLAxJ4-o7ZoPf8rZBNnYQXRKvGW48gZXxr
-
-DataCamp. (2023). *Introduction to Geospatial Data in Python* [Tutorial interactivo]. https://www.datacamp.com/tutorial/geospatial-data-python
-
-#### Repositorios y Código
-
-**5. Ejemplos de Código**
-
-OpenGeo. (2024). *Python-geospatial: Collection of Python packages for geospatial analysis* [Repositorio]. GitHub. https://github.com/opengeos/python-geospatial
-
-UW DSSG. (2024). *DSSG 2024 Geospatial Analysis Tutorial* [Repositorio]. GitHub. https://github.com/uwescience/dssg2024_geospatial_tutorial
-
-### 📝 GUÍA PASO A PASO PARA RESOLVER EL RETO
-
-#### **PASO 1: Configuración del Entorno (Día 1-2)**
-
-**1.1 Instalación de Bibliotecas**
-```python
 # Crear entorno virtual
-python -m venv venv_geospatial
-source venv_geospatial/bin/activate  # En Windows: venv_geospatial\Scripts\activate
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
 
 # Instalar dependencias
-pip install geopandas shapely rasterio folium matplotlib pandas numpy
+pip install -r requirements.txt
 ```
 
-**1.2 Estructura del Proyecto**
+### requirements.txt
 ```
-proyecto_geoespacial/
+geopandas>=0.14.0
+shapely>=2.0.0
+folium>=0.15.0
+toolz>=0.12.0
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+```
+
+---
+
+## 🚀 Uso del Sistema
+
+```python
+from src.geospatial import load_geojson, analyze_patterns
+
+# Cargar datos geoespaciales
+data = load_geojson('datos/mapa.geojson')
+
+# Pipeline funcional de análisis
+result = (data
+    .pipe(filter_by_property('type', 'polygon'))
+    .pipe(calculate_areas)
+    .pipe(detect_clusters)
+    .pipe(generate_statistics))
+
+# Visualizar resultados
+visualize_map(result, output='mapa_resultado.html')
+```
+
+---
+
+## 📂 Estructura del Proyecto
+
+```
+analisis-geoespacial-funcional/
 ├── src/
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── geometry.py      # Funciones puras de geometría
-│   │   ├── transformers.py  # Funciones de transformación
-│   │   └── aggregators.py   # Funciones de agregación
-│   ├── analysis/
-│   │   ├── __init__.py
-│   │   ├── clustering.py    # Algoritmos de clustering
-│   │   └── patterns.py      # Detección de patrones
-│   └── visualization/
-│       ├── __init__.py
-│       └── maps.py          # Generación de visualizaciones
-├── tests/
+│   ├── __init__.py
+│   ├── geospatial.py       # Funciones de procesamiento geoespacial
+│   ├── transforms.py       # Transformaciones funcionales
+│   ├── analysis.py         # Análisis de patrones
+│   └── visualization.py    # Generación de visualizaciones
 ├── data/
+│   ├── input/              # Datos de entrada (GeoJSON, Shapefiles)
+│   └── output/             # Resultados procesados
+├── tests/
+│   ├── test_geospatial.py
+│   ├── test_transforms.py
+│   └── test_analysis.py
+├── docs/
+│   ├── arquitectura.md
+│   └── ejemplos.md
 ├── notebooks/
-└── requirements.txt
+│   └── exploracion.ipynb
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
+---
 
+## 🔑 Características Principales
+
+### 1. Funciones Puras
+```python
+def calculate_area(geometry):
+    """Calcula área sin modificar la geometría original"""
+    return geometry.area
+
+def filter_by_area(min_area):
+    """Función curried para filtrar por área"""
+    return lambda geom: geom.area >= min_area
+```
+
+### 2. Composición Funcional
+```python
+from functools import reduce
+from toolz import pipe, compose
+
+# Pipeline de transformación
+process_geodata = pipe(
+    load_geojson,
+    filter_valid_geometries,
+    transform_crs,
+    calculate_metrics,
+    generate_report
+)
+```
+
+### 3. Inmutabilidad
+```python
+from dataclasses import dataclass
+from typing import Tuple
+
+@dataclass(frozen=True)
+class GeoPoint:
+    lat: float
+    lon: float
+    properties: dict
+```
+
+---
+
+## 📊 Funcionalidades Implementadas
+
+- ✅ Carga y validación de datos geoespaciales
+- ✅ Transformación de sistemas de coordenadas
+- ✅ Cálculo de métricas espaciales (área, perímetro, distancias)
+- ✅ Detección de clusters mediante análisis funcional
+- ✅ Generación de estadísticas descriptivas
+- ✅ Visualización interactiva con mapas
+- ✅ Exportación de resultados en múltiples formatos
+
+---
+
+## 🧪 Testing
+
+```bash
+# Ejecutar todos los tests
+pytest tests/
+
+# Tests con cobertura
+pytest --cov=src tests/
+
+# Tests específicos
+pytest tests/test_geospatial.py -v
+```
+
+---
+
+## 📈 Pipeline de Desarrollo
+
+### Semana 1: Fundamentos (30 Oct - 5 Nov)
+- Configuración del entorno
+- Implementación de funciones básicas de carga
+- Transformaciones CRS funcionales
+
+### Semana 2: Análisis Avanzado (6 Nov - 12 Nov)
+- Detección de patrones territoriales
+- Algoritmos de clustering funcional
+- Métricas espaciales composables
+
+### Semana 3: Visualización (13 Nov - 19 Nov)
+- Generación de mapas interactivos
+- Dashboard de análisis
+- Documentación completa
+
+---
+
+## 🌟 Componente de Emprendimiento
+
+**Aplicación Real**: Sistema de análisis territorial para empresas de bienes raíces, permitiendo identificar zonas de alto valor comercial mediante análisis de patrones geoespaciales.
+
+**Propuesta de Valor**:
+- Toma de decisiones basada en datos espaciales
+- Identificación de oportunidades de inversión
+- Análisis predictivo de crecimiento urbano
+
+---
+
+## 📚 Referencias
+
+- **Functools Documentation**: https://docs.python.org/3/library/functools.html
+- **GeoPandas**: https://geopandas.org/
+- **Shapely User Manual**: https://shapely.readthedocs.io/
+- **Toolz Documentation**: https://toolz.readthedocs.io/
+
+---
+
+## 👥 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+1. Fork el proyecto
+2. Crea una rama (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -m 'Agrega nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
+
+---
+
+## 📄 Licencia
+
+Este proyecto es parte del curso de Programación Funcional de la Universidad de Colima.
+
+---
+
+## ✉️ Contacto
+
+**Autor**: [Tu Nombre]  
+**Email**: [tu-email@ucol.mx]  
+**GitHub**: [@tu-usuario](https://github.com/tu-usuario)
+
+---
+
+## 🏆 Criterios de Evaluación
+
+- **Funciones Puras (30%)**: Ausencia de efectos secundarios, determinismo
+- **Composición Funcional (25%)**: Pipeline elegante, reutilización
+- **Inmutabilidad (20%)**: Estructuras inmutables, manejo correcto
+- **Testing (15%)**: Cobertura de pruebas, casos edge
+- **Documentación (10%)**: README claro, comentarios útiles
