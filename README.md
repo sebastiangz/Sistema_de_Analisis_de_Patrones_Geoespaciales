@@ -1,4 +1,4 @@
-# Sistema_de_Analisis_de_Patrones_Geoespaciales
+# Sistema de Análisis de Patrones Geoespaciales
 Desarrollar un sistema que analice datos geoespaciales utilizando paradigmas funcionales para identificar patrones espaciales. El sistema procesará coordenadas, calculará distancias, realizará agrupaciones y generará visualizaciones interactivas
 
 ###  OBJETIVOS DE APRENDIZAJE
