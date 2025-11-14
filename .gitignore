@@ -1,0 +1,5 @@
+# Archivo para ignorar archivos temporales
+__pycache__/
+*.pyc
+.ipynb_checkpoints
+venv/

@@ -1,0 +1,8 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature", "properties": {"id": "zona_A", "tipo_zona": "Comercial", "valor_estimado": 4500000}, "geometry": {"type": "Polygon", "coordinates": [[[-103.4, 19.2], [-103.3, 19.2], [-103.3, 19.3], [-103.4, 19.3], [-103.4, 19.2]]]}},
+    {"type": "Feature", "properties": {"id": "zona_B", "tipo_zona": "Residencial", "valor_estimado": 2200000}, "geometry": {"type": "Polygon", "coordinates": [[[-103.3, 19.1], [-103.2, 19.1], [-103.2, 19.2], [-103.3, 19.2], [-103.3, 19.1]]]}},
+    {"type": "Feature", "properties": {"id": "zona_C", "tipo_zona": "Comercial", "valor_estimado": 7800000}, "geometry": {"type": "Polygon", "coordinates": [[[-103.5, 19.25], [-103.4, 19.25], [-103.4, 19.35], [-103.5, 19.35], [-103.5, 19.25]]]}}
+  ]
+}
