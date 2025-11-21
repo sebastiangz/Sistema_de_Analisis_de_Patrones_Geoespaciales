@@ -1,0 +1,6 @@
+geopandas
+folium
+toolz
+pytest
+mapclassify
+matplotlib
