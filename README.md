@@ -59,3 +59,12 @@ El proyecto demuestra los siguientes conceptos clave de la materia:
 ├── .gitignore
 ├── requirements.txt    # Dependencias del proyecto
 └── README.md           # Documentación
+```
+
+### Distancia desde un punto de referencia
+
+`calculate_distance_from_point_km(gdf, (longitud, latitud))` en
+`src/transforms.py` devuelve una copia del GeoDataFrame con la columna
+`distance_km`, calculada desde el centroide de cada geometría al punto indicado.
+El GeoDataFrame debe tener un CRS definido. Las mediciones se realizan en la
+zona UTM estimada para el punto de referencia y la entrada conserva su CRS.
