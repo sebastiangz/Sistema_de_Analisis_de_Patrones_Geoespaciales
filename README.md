@@ -68,3 +68,19 @@ El proyecto demuestra los siguientes conceptos clave de la materia:
 `distance_km`, calculada desde el centroide de cada geometría al punto indicado.
 El GeoDataFrame debe tener un CRS definido. Las mediciones se realizan en la
 zona UTM estimada para el punto de referencia y la entrada conserva su CRS.
+
+## Ejecutar el analisis integrado
+
+Instala las dependencias y ejecuta el analisis con el GeoJSON de ejemplo:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m src.pipeline --zone-type Comercial --top-n 2 --reference-point -103.7 19.2
+```
+
+El comando calcula `area_km2`, filtra por `tipo_zona`, conserva las zonas con
+mayor area, agrega `distance_km` desde la coordenada opcional y guarda un mapa
+interactivo en `outputs/mapa_analisis.html`. Puedes cambiar la entrada y salida
+con `--input` y `--output`; para omitir la distancia, quita `--reference-point`.
+Si el filtro no encuentra zonas, el comando informa el error en vez de guardar
+un mapa vacio.

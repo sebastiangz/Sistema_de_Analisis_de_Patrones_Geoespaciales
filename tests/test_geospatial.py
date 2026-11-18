@@ -1,14 +1,19 @@
 # Prueba que la carga de datos funcione
-import pytest
 import geopandas as gpd
+from shapely.geometry import Point
 from src.geospatial import load_geojson
 
-# Usamos una URL de prueba que sabemos que funciona
-URL_DATA_GOOD = "https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_countries.zip"
+def test_load_geojson_returns_local_geodataframe(tmp_path):
+    source = gpd.GeoDataFrame(
+        {"id": ["zone-1"], "geometry": [Point(0, 0)]},
+        crs="EPSG:4326",
+    )
+    filepath = tmp_path / "zones.geojson"
+    source.to_file(filepath, driver="GeoJSON")
 
-def test_load_geojson_returns_geodataframe():
-    result_gdf = load_geojson(URL_DATA_GOOD)
+    result_gdf = load_geojson(filepath)
+
     assert isinstance(result_gdf, gpd.GeoDataFrame)
     assert not result_gdf.empty
-
-print("Archivo 'tests/test_geospatial.py' CREADO.")
+    assert result_gdf.loc[0, "id"] == "zone-1"
+    assert result_gdf.crs == source.crs
