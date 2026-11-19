@@ -174,3 +174,17 @@ valor pendiente de validar y limitaciones, está en
 El diálogo aparte para un video dirigido a una empresa —presentando SAPG como
 piloto por validar y sin afirmar resultados comerciales no medidos— está en
 [GUION_VIDEO_COMERCIAL.md](GUION_VIDEO_COMERCIAL.md).
+
+## Publicar demo permanentemente
+
+La publicación automática con GitHub Pages está preparada, pero todavía no está
+activa. Un administrador del repositorio debe habilitarla en **Settings → Pages
+→ Build and deployment → Source: GitHub Actions** y combinar los cambios a
+`main`. Después del primer despliegue, la demo estará disponible sin que la
+computadora del equipo esté encendida en:
+
+https://sebastiangz.github.io/Sistema_de_Analisis_de_Patrones_Geoespaciales/
+
+La página y el mapa son públicos. El repositorio solo debe desplegar datos que
+se puedan compartir públicamente. El pipeline regenera `web/mapa.html` durante
+la publicación; el archivo generado no se guarda en Git.
