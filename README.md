@@ -133,6 +133,8 @@ las transformaciones en una secuencia reproducible [5].
 El archivo de demostración contiene tres zonas. No documenta la fuente ni la
 unidad de `valor_estimado`; por ello, el valor se muestra solo como atributo y
 no debe interpretarse como una tasación oficial ni como evidencia de mercado.
+El ejemplo prueba el flujo técnico, no valida todavía un producto comercial ni
+la adecuación a los datos de una empresa.
 La proyección local es adecuada para este ejemplo regional, no para calcular
 con precisión áreas o distancias globales. Para visualizar el HTML se requiere
 Internet, ya que el mapa y las teselas base usan recursos externos.
@@ -168,3 +170,7 @@ Available: https://python-visualization.github.io/folium/latest/user_guide/geojs
 El guion de exposición, con demo en vivo, resultados de ejemplo, propuesta de
 valor pendiente de validar y limitaciones, está en
 [PRESENTACION_FINAL.md](PRESENTACION_FINAL.md).
+
+El diálogo aparte para un video dirigido a una empresa —presentando SAPG como
+piloto por validar y sin afirmar resultados comerciales no medidos— está en
+[GUION_VIDEO_COMERCIAL.md](GUION_VIDEO_COMERCIAL.md).
