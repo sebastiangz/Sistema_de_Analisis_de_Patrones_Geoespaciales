@@ -40,7 +40,9 @@ def test_run_analysis_composes_transform_filter_and_map(local_zones_file, tmp_pa
     assert result["area_km2"].iloc[0] > 0
     assert result["distance_km"].iloc[0] > 0
     assert output_path.is_file()
-    assert "large-commercial" in output_path.read_text(encoding="utf-8")
+    map_html = output_path.read_text(encoding="utf-8")
+    assert "large-commercial" in map_html
+    assert "#e76f51" in map_html
 
 
 def test_run_analysis_reports_when_filter_has_no_matches(local_zones_file, tmp_path):
