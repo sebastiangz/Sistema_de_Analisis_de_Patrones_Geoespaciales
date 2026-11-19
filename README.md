@@ -179,9 +179,9 @@ piloto por validar y sin afirmar resultados comerciales no medidos— está en
 
 La publicación automática con GitHub Pages está preparada, pero todavía no está
 activa. Un administrador del repositorio debe habilitarla en **Settings → Pages
-→ Build and deployment → Source: GitHub Actions** y combinar los cambios a
-`main`. Después del primer despliegue, la demo estará disponible sin que la
-computadora del equipo esté encendida en:
+→ Build and deployment → Source: GitHub Actions**. Después de combinar estos
+cambios a `main`, el workflow probará el proyecto, regenerará el mapa y lo
+publicará sin que la computadora del equipo esté encendida en:
 
 https://sebastiangz.github.io/Sistema_de_Analisis_de_Patrones_Geoespaciales/
 
