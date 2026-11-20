@@ -1,4 +1,6 @@
 # Modulo para visualizar mapas
+from pathlib import Path
+
 import folium
 import geopandas as gpd
 
@@ -6,26 +8,30 @@ def visualize_map(gdf: gpd.GeoDataFrame, location: list = None, zoom_start: int 
     """Genera un mapa interactivo de Folium, adaptándose a las columnas disponibles."""
     if gdf.empty:
         return
+    gdf = gdf.to_crs('EPSG:4326') if gdf.crs is not None else gdf
+    west, south, east, north = gdf.total_bounds
     if location is None:
-        try:
-            center = gdf.unary_union.centroid
-            location = [center.y, center.x]
-        except Exception:
-            location = [0, 0]
+        location = [(south + north) / 2, (west + east) / 2]
 
     m = folium.Map(location=location, zoom_start=zoom_start)
     
-    cols = [col for col in ['NAME', 'CONTINENT', 'area_km2'] if col in gdf.columns]
-    if not cols:
-        cols = [col for col in ['id', 'tipo_zona', 'valor_estimado', 'area_km2'] if col in gdf.columns]
+    labels = {
+        'nomgeo': 'Municipio', 'cvegeo': 'Clave INEGI',
+        'NAME': 'Nombre', 'CONTINENT': 'Continente',
+        'id': 'Zona', 'tipo_zona': 'Tipo de zona', 'valor_estimado': 'Valor estimado',
+        'area_km2': 'Área (km²)', 'distance_km': 'Distancia al centro de distribución (km)',
+    }
+    fields = [field for field in labels if field in gdf.columns]
+    aliases = [labels[field] for field in fields]
+    metrics = [field for field in ('area_km2', 'distance_km') if field in gdf.columns]
+    folium.GeoJson(
+        gdf.round(dict.fromkeys(metrics, 2)).to_json(),
+        tooltip=folium.GeoJsonTooltip(fields=fields, aliases=aliases) if fields else None,
+        popup=folium.GeoJsonPopup(fields=fields, aliases=aliases) if fields else None,
+    ).add_to(m)
 
-    if cols:
-        folium.GeoJson(
-            gdf,
-            tooltip=folium.features.GeoJsonTooltip(fields=cols, aliases=cols),
-            popup=folium.features.GeoJsonPopup(fields=cols, aliases=cols)
-        ).add_to(m)
-
+    if output_filename is not None:
+        output = Path(output_filename)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        m.save(str(output))
     return m
-
-print("Archivo src/visualization.py creado.")
