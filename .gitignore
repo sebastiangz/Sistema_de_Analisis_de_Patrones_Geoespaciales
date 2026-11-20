@@ -5,3 +5,5 @@ __pycache__/
 venv/
 .local-deps/
 data/output/
+outputs/
+web/mapa.html

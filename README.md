@@ -28,6 +28,16 @@ python -m src.pipeline --radio-km 25 --salida data/output/colima-25.html
 
 El radio debe ser finito y mayor o igual que cero. Si el radio excluye todos los centroides, el programa informa el motivo y termina antes de escribir un mapa.
 
+## Demo de zonas y GitHub Pages
+
+La demo de zonas usa el mismo pipeline. Carga `data/input/mapa.geojson` por defecto, permite filtrar por `tipo_zona` y conserva las zonas de mayor área. Las opciones `--input`, `--output`, `--top-n` y `--reference-point` permiten ajustar la ejecución. Usa `--zonas` para ejecutar la demo con sus valores predeterminados.
+
+```powershell
+python -m src.pipeline --zone-type Comercial --top-n 2 --reference-point -103.35 19.2 --output web/mapa.html
+```
+
+El sitio está en [web/index.html](web/index.html). El [flujo de publicación](.github/workflows/deploy-pages.yml) ejecuta las pruebas, genera el mapa de zonas y prepara el sitio. Para publicar en el repositorio, selecciona **GitHub Actions** como fuente en **Settings → Pages**. La presentación y el guion están en [PRESENTACION_FINAL.md](PRESENTACION_FINAL.md) y [GUION_VIDEO_COMERCIAL.md](GUION_VIDEO_COMERCIAL.md).
+
 ## Datos y método
 
 - [`data/input/colima.geojson`](data/input/colima.geojson) contiene las diez áreas municipales de Colima del Marco Geoestadístico del INEGI de diciembre de 2025. El archivo declara el sistema EPSG:6365 a nivel de colección para que GeoPandas interprete correctamente las coordenadas. El pipeline filtra por la clave estatal `06`. [Datos del INEGI](https://gaia.inegi.org.mx/wscatgeo/v2/geo/mgem/06)

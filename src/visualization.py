@@ -21,10 +21,13 @@ def visualize_map(
 ):
     """Genera un mapa interactivo de Folium, adaptándose a las columnas disponibles."""
     if gdf.empty:
-        return
-    gdf = gdf.to_crs('EPSG:4326') if gdf.crs is not None else gdf
+        raise ValueError('Cannot create a map from an empty GeoDataFrame.')
+    if gdf.crs is None:
+        raise ValueError('The GeoDataFrame must have a defined CRS to create a map.')
+    gdf = gdf.to_crs('EPSG:4326')
     west, south, east, north = gdf.total_bounds
-    if location is None:
+    fit_to_data = location is None
+    if fit_to_data:
         location = [(south + north) / 2, (west + east) / 2]
 
     m = folium.Map(location=location, zoom_start=zoom_start, tiles=tiles, control_scale=True)
@@ -33,13 +36,23 @@ def visualize_map(
         'nomgeo': 'Municipio', 'cvegeo': 'Clave INEGI',
         'NAME': 'Nombre', 'CONTINENT': 'Continente',
         'id': 'Zona', 'tipo_zona': 'Tipo de zona', 'valor_estimado': 'Valor estimado',
-        'area_km2': 'Área (km²)', 'distance_km': 'Distancia al centro de distribución (km)',
+        'area_km2': 'Área (km²)', 'distance_km': 'Distancia al punto de referencia (km)',
         'distance_band': 'Grupo de distancia',
     }
     fields = [field for field in labels if field in gdf.columns]
-    aliases = [labels[field] for field in fields]
+    if not fields:
+        fields = [field for field in gdf.columns if field != gdf.geometry.name]
+    aliases = [labels.get(field, field) for field in fields]
     metrics = [field for field in ('area_km2', 'distance_km') if field in gdf.columns]
-    style = {}
+    def style_zone(feature):
+        zone = feature['properties'].get('tipo_zona')
+        color = {'Comercial': '#e76f51', 'Residencial': '#457b9d'}.get(zone, '#2a9d8f')
+        return {'color': color, 'fillColor': color, 'fillOpacity': 0.45, 'weight': 2}
+
+    style = {
+        'style_function': style_zone,
+        'highlight_function': lambda _: {'weight': 4, 'fillOpacity': 0.7},
+    }
     if 'distance_band' in gdf.columns:
         style = {
             'style_function': lambda feature: {
@@ -81,6 +94,9 @@ def visualize_map(
              [max(north, latitude), max(east, longitude)]],
             padding=(24, 24), max_zoom=12,
         )
+
+    elif fit_to_data:
+        m.fit_bounds([[south, west], [north, east]], padding=(20, 20))
 
     if output_filename is not None:
         output = Path(output_filename)

@@ -4,6 +4,7 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 from src.analysis import (
     DISTANCE_BANDS,
+    filter_by_continent,
     filter_by_max_distance,
     filter_by_property,
     get_top_n_areas,
@@ -54,3 +55,23 @@ def test_group_distances_and_summarize_selected_areas(analysis_fixture):
     summary = summarize_distance_groups(grouped.iloc[:3])
     assert summary['municipios'].tolist() == [1, 2, 0]
     assert summary['area_total_km2'].tolist() == [100, 300, 0]
+
+
+def test_filter_by_property_is_curried_and_does_not_mutate_input(analysis_fixture):
+    filter_commercial = filter_by_property("tipo_zona", "Comercial")
+
+    result = filter_commercial(analysis_fixture)
+
+    assert result["id"].tolist() == ["A", "C"]
+    assert len(analysis_fixture) == 2
+    assert result is not analysis_fixture
+
+
+def test_filter_by_property_reports_missing_column(analysis_fixture):
+    with pytest.raises(ValueError, match="missing|columna"):
+        filter_by_property("unknown", "value")(analysis_fixture)
+
+
+def test_get_top_n_areas_rejects_non_positive_count():
+    with pytest.raises(ValueError, match="positivo"):
+        get_top_n_areas(0)(gpd.GeoDataFrame())
