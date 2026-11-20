@@ -1,4 +1,5 @@
 geopandas
+pyproj
 folium
 toolz
 pytest
