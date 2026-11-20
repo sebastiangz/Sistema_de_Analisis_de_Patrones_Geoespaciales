@@ -1,5 +1,12 @@
-# Contenido definitivo para el análisis con currying
+# Filtros y análisis geoespacial
+from bisect import bisect_left
+
 import geopandas as gpd
+import pandas as pd
+
+
+DISTANCE_LIMITS_KM = (20, 40)
+DISTANCE_BANDS = ('Hasta 20 km', 'Más de 20 y hasta 40 km', 'Más de 40 km')
 
 def filter_by_continent(continent_name: str):
     """Función Curried para filtrar el mapa mundial."""
@@ -29,3 +36,21 @@ def filter_by_max_distance(max_km: float):
     def inner_filter(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         return df[df['distance_km'] <= max_km].copy()
     return inner_filter
+
+
+def group_by_distance(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Asigna a cada municipio el grupo correspondiente a su distancia."""
+    bands = df['distance_km'].map(
+        lambda distance: DISTANCE_BANDS[bisect_left(DISTANCE_LIMITS_KM, distance)]
+    )
+    return df.assign(distance_band=bands)
+
+
+def summarize_distance_groups(df: gpd.GeoDataFrame) -> pd.DataFrame:
+    """Resume los municipios seleccionados y su superficie por grupo."""
+    return (
+        df.groupby('distance_band', sort=False)
+        .agg(municipios=('area_km2', 'size'), area_total_km2=('area_km2', 'sum'))
+        .reindex(DISTANCE_BANDS, fill_value=0)
+        .rename_axis('grupo')
+    )
