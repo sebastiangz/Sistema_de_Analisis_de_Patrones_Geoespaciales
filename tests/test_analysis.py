@@ -2,7 +2,7 @@
 import pytest
 import geopandas as gpd
 from shapely.geometry import Polygon
-from src.analysis import filter_by_property, get_top_n_areas
+from src.analysis import filter_by_max_distance, filter_by_property, get_top_n_areas
 
 @pytest.fixture
 def analysis_fixture() -> gpd.GeoDataFrame:
@@ -23,4 +23,15 @@ def test_get_top_n_areas_curried(analysis_fixture):
     assert len(result_gdf) == 1
     assert result_gdf['id'].iloc[0] == 'C'
 
-print("Archivo 'tests/test_analysis.py' CREADO.")
+def test_filter_by_max_distance_includes_boundary(analysis_fixture):
+    source = analysis_fixture.assign(distance_km=[10, 20])
+    result = filter_by_max_distance(10)(source)
+
+    assert result['id'].tolist() == ['A']
+    assert source['id'].tolist() == ['A', 'C']
+
+
+def test_filter_by_property_selects_matching_rows(analysis_fixture):
+    result = filter_by_property('id', 'C')(analysis_fixture)
+
+    assert result['id'].tolist() == ['C']
