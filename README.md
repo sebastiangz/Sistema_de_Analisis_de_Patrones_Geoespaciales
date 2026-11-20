@@ -1,190 +1,92 @@
-# 🌍 Sistema de Análisis de Patrones Geoespaciales (SAPG)
+# Sistema de Análisis de Patrones Geoespaciales (SAPG)
 
-> **Proyecto Final de Programación Funcional**
+Proyecto final de Programación Funcional · Facultad de Ingeniería en Computación Inteligente, Universidad de Colima.
 
----
+**Integrantes** · Miguel Alejandro Marcial Victorino y Diego Eduardo Araujo Manrique
 
-## 📋 Información del Proyecto
+**Profesor** · Sebastián González Zepeda
 
-| Concepto | Detalle |
-| :--- | :--- |
-| **Universidad** | Universidad de Colima |
-| **Facultad** | Ingeniería en Computación Inteligente |
-| **Materia** | Programación Funcional |
-| **Profesor** | Sebastián González Zepeda |
-| **Estudiantes** | Miguel Alejandro Marcial Victorino y Diego Eduardo Araujo Manrique |
-| **Semestre** | 3º Semestre |
+El sistema compara la cobertura de un centro de distribución hipotético en la ciudad de Colima. Calcula la superficie de cada municipio y la distancia desde el centro de distribución hasta su centroide. El resultado es una tabla de municipios, un resumen por distancia y un mapa interactivo.
 
----
+## Ejecutar el análisis
 
-## 🚀 Descripción
-
-Este sistema permite la ingesta de datos geoespaciales (GeoJSON/Shapefiles) para realizar análisis automatizados. El núcleo del proyecto se basa en la **composición de funciones** y **pipelines** de datos, evitando estados mutables y garantizando un flujo de información limpio y testeable.
-
-### ✨ Características Principales
-* **Carga de Datos Modular:** Soporte para archivos locales y remotos (ZIP/GeoJSON).
-* **Cálculo Geométrico Puro:** Transformaciones de datos (como cálculo de áreas en $km^2$) mediante funciones puras.
-* **Filtrado Funcional (Currying):** Uso de funciones de orden superior para crear filtros dinámicos (por continente, tipo de zona, etc.).
-* **Visualización Interactiva:** Generación automática de mapas HTML con `Folium`.
-
----
-
-## 🛠️ Arquitectura Técnica (Paradigma Funcional)
-
-El proyecto demuestra los siguientes conceptos clave de la materia:
-
-1.  **Pipelines (`toolz.pipe`):** El procesamiento no es secuencial imperativo, sino un flujo de transformaciones.
-2.  **Funciones Puras:** En `src/transforms.py`, las funciones no tienen efectos secundarios; entran datos y salen datos nuevos.
-3.  **Inmutabilidad:** Se generan copias de los DataFrames (`df.copy()`) para no alterar los datos originales.
-4.  **Currying:** En `src/analysis.py`, funciones como `filter_by_continent` devuelven otras funciones preparadas para el pipeline.
-
----
-
-## 📂 Estructura del Repositorio
-
-```text
-.
-├── data/
-│   └── input/          # Datos de entrada (ej. mapa.geojson)
-├── src/                # Código Fuente (Módulos)
-│   ├── __init__.py
-│   ├── geospatial.py   # Carga de datos (IO)
-│   ├── transforms.py   # Transformaciones puras
-│   ├── analysis.py     # Lógica de negocio y filtros
-│   ├── pipeline.py     # Flujo ejecutable de análisis
-│   └── visualization.py # Generación de mapas
-├── tests/              # Pruebas Unitarias
-│   ├── test_analysis.py
-│   ├── test_geospatial.py
-│   ├── test_pipeline.py
-│   └── test_transforms.py
-├── .gitignore
-├── requirements.txt    # Dependencias del proyecto
-├── PRESENTACION_FINAL.md # Guion y demo para la exposición
-└── README.md           # Documentación
-```
-
-### Distancia desde un punto de referencia
-
-`calculate_distance_from_point_km(gdf, (longitud, latitud))` en
-`src/transforms.py` devuelve una copia del GeoDataFrame con la columna
-`distance_km`, calculada desde el centroide de cada geometría al punto indicado.
-El GeoDataFrame debe tener un CRS definido. Las mediciones se realizan en la
-zona UTM estimada para el punto de referencia y la entrada conserva su CRS.
-
-## Demo rápida
-
-Instala las dependencias y ejecuta el analisis con el GeoJSON de ejemplo:
+Desde la raíz del repositorio, con Python 3.12:
 
 ```powershell
 python -m pip install -r requirements.txt
-python -m src.pipeline --zone-type Comercial --top-n 2 --reference-point -103.35 19.2
-```
-
-El comando calcula `area_km2`, filtra por `tipo_zona`, conserva las zonas con
-mayor area, agrega `distance_km` desde la coordenada opcional y guarda un mapa
-interactivo en `outputs/mapa_analisis.html`. Puedes cambiar la entrada y salida
-con `--input` y `--output`; para omitir la distancia, quita `--reference-point`.
-Si el filtro no encuentra zonas, el comando informa el error en vez de guardar
-un mapa vacio.
-
-## Instalación, opciones y pruebas
-
-Se requiere Python 3.10 o posterior. Instala las dependencias desde la raíz:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-Opciones del comando:
-
-| Opción | Uso |
-| :--- | :--- |
-| `--input RUTA` | GeoJSON de entrada (por defecto `data/input/mapa.geojson`). |
-| `--output RUTA` | HTML de salida (por defecto `outputs/mapa_analisis.html`). |
-| `--zone-type TIPO` | Filtra `tipo_zona`, por ejemplo `Comercial` o `Residencial`. |
-| `--top-n N` | Número positivo de zonas más grandes que se conservarán. |
-| `--reference-point LONGITUD LATITUD` | Añade distancia al punto en EPSG:4326. |
-
-Para analizar todas las zonas sin distancias, ejecuta `python -m src.pipeline`.
-El programa valida CRS y parámetros; errores de lectura, columnas ausentes o
-filtros sin coincidencias se notifican en lugar de producir una salida vacía.
-Los mapas bajo `outputs/` se ignoran en Git.
-
-Ejecuta las pruebas desde la raíz:
-
-```powershell
+python -m src.pipeline
 python -m pytest -q
 ```
 
-Las pruebas usan GeoJSON temporales locales y cubren transformaciones,
-inmutabilidad, validación de entradas, integración del pipeline y generación
-del mapa, sin descargar datos de prueba.
+El comando usa un radio de **60 km** y guarda el mapa en `data/output/colima.html`. Abre el HTML en un navegador y selecciona un municipio para ver su nombre, clave INEGI, área y distancia. El análisis lee los datos del repositorio y el navegador carga Leaflet desde un CDN.
 
-## Metodología y alcance
+Para comparar con un radio de **25 km**:
 
-El GeoJSON de ejemplo usa coordenadas geográficas WGS 84 [1]. Las áreas y
-distancias se calculan después de proyectar las geometrías a una zona UTM local,
-ya que las áreas de GeoPandas se expresan en las unidades del CRS y no deben
-calcularse directamente en grados [2]–[4]. El mapa reproyecta las geometrías a
-EPSG:4326 y las presenta como capa GeoJSON de Folium [6]. `toolz.pipe` compone
-las transformaciones en una secuencia reproducible [5].
+```powershell
+python -m src.pipeline --radio-km 25 --salida data/output/colima-25.html
+```
 
-El archivo de demostración contiene tres zonas. No documenta la fuente ni la
-unidad de `valor_estimado`; por ello, el valor se muestra solo como atributo y
-no debe interpretarse como una tasación oficial ni como evidencia de mercado.
-El ejemplo prueba el flujo técnico, no valida todavía un producto comercial ni
-la adecuación a los datos de una empresa.
-La proyección local es adecuada para este ejemplo regional, no para calcular
-con precisión áreas o distancias globales. Para visualizar el HTML se requiere
-Internet, ya que el mapa y las teselas base usan recursos externos.
+El radio debe ser finito y mayor o igual que cero. Si el radio excluye todos los centroides, el programa informa el motivo y termina antes de escribir un mapa.
 
-## Referencias
+## Demo de zonas y GitHub Pages
 
-[1] H. Butler, M. Daly, A. Doyle, S. Gillies, S. Hagen, and T. Schaub,
-“The GeoJSON Format,” RFC 7946, Aug. 2016. doi: 10.17487/RFC7946.
-[Online]. Available: https://www.rfc-editor.org/rfc/rfc7946
+La demo de zonas usa el mismo pipeline. Carga `data/input/mapa.geojson` por defecto, permite filtrar por `tipo_zona` y conserva las zonas de mayor área. Las opciones `--input`, `--output`, `--top-n` y `--reference-point` permiten ajustar la ejecución. Usa `--zonas` para ejecutar la demo con sus valores predeterminados.
 
-[2] GeoPandas Developers, “Projections,” *GeoPandas Documentation*.
-[Online]. Available: https://geopandas.org/en/stable/docs/user_guide/projections.html
-(accessed Nov. 19, 2026).
+```powershell
+python -m src.pipeline --zone-type Comercial --top-n 2 --reference-point -103.35 19.2 --output web/mapa.html
+```
 
-[3] GeoPandas Developers, “geopandas.GeoSeries.area,” *GeoPandas API Reference*.
-[Online]. Available: https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoSeries.area.html
-(accessed Nov. 19, 2026).
+El sitio está en [web/index.html](web/index.html). El [flujo de publicación](.github/workflows/deploy-pages.yml) ejecuta las pruebas, genera el mapa de zonas y prepara el sitio. Para publicar en el repositorio, selecciona **GitHub Actions** como fuente en **Settings → Pages**. La presentación y el guion están en [PRESENTACION_FINAL.md](PRESENTACION_FINAL.md) y [GUION_VIDEO_COMERCIAL.md](GUION_VIDEO_COMERCIAL.md).
 
-[4] GeoPandas Developers, “geopandas.GeoDataFrame.estimate_utm_crs,”
-*GeoPandas API Reference*. [Online]. Available:
-https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.estimate_utm_crs.html
-(accessed Nov. 19, 2026).
+## Datos y método
 
-[5] Toolz Developers, “Composability,” *Toolz Documentation*. [Online]. Available:
-https://toolz.readthedocs.io/en/latest/composition.html (accessed Nov. 19, 2026).
+- [`data/input/colima.geojson`](data/input/colima.geojson) contiene las diez áreas municipales de Colima del Marco Geoestadístico del INEGI de diciembre de 2025. El archivo declara el sistema EPSG:6365 a nivel de colección para que GeoPandas interprete correctamente las coordenadas. El pipeline filtra por la clave estatal `06`. [Datos del INEGI](https://gaia.inegi.org.mx/wscatgeo/v2/geo/mgem/06)
+- El centro de distribución se ubica en **19.243° N, 103.724° O**. El área se calcula en la proyección equivalente EPSG:6933 y la distancia geodésica se calcula sobre WGS 84.
+- [`data/input/mapa.geojson`](data/input/mapa.geojson) es el archivo de ejemplo de la base de 2025.
 
-[6] Python Visualization, “Using GeoJson,” *Folium User Guide*. [Online].
-Available: https://python-visualization.github.io/folium/latest/user_guide/geojson/geojson.html
-(accessed Nov. 19, 2026).
+## Semana 3 · Agrupación y análisis de patrones
 
-## Presentación
+Después de aplicar el filtro por radio, `group_by_distance` usa `Series.map` para asignar un grupo a cada municipio. `summarize_distance_groups` cuenta los municipios y suma sus superficies por grupo con `groupby().agg()`. El resumen incluye los grupos vacíos y los mismos intervalos se reflejan en la leyenda del mapa.
 
-El guion de exposición, con demo en vivo, resultados de ejemplo, propuesta de
-valor pendiente de validar y limitaciones, está en
-[PRESENTACION_FINAL.md](PRESENTACION_FINAL.md).
+| Grupo de distancia | Municipios a 25 km | Superficie a 25 km (km²) | Municipios a 60 km | Superficie a 60 km (km²) |
+| --- | ---: | ---: | ---: | ---: |
+| Hasta 20 km | 4 | 1,758.97 | 4 | 1,758.97 |
+| Más de 20 y hasta 40 km | 1 | 499.91 | 4 | 1,710.86 |
+| Más de 40 km | 0 | 0.00 | 0 | 0.00 |
+| **Total** | **5** | **2,258.88** | **8** | **3,469.83** |
 
-El diálogo aparte para un video dirigido a una empresa —presentando SAPG como
-piloto por validar y sin afirmar resultados comerciales no medidos— está en
-[GUION_VIDEO_COMERCIAL.md](GUION_VIDEO_COMERCIAL.md).
+Los cuatro municipios más cercanos son Villa de Álvarez, Cuauhtémoc, Colima y Comala. A 25 km también entra Coquimatlán. Ampliar el radio a 60 km añade Ixtlahuacán, Minatitlán y Armería. El centroide más lejano de los ocho seleccionados queda a 38.68 km. Para un piloto de reparto, el grupo de hasta 20 km ofrece un conjunto inicial de municipios que se puede contrastar con rutas, tiempos de viaje y demanda.
 
-## Publicar demo permanentemente
+El área total corresponde a los polígonos completos de los municipios seleccionados por su centroide. Las partes insulares pueden desplazar ese punto. Por ejemplo, el centroide calculado para Tecomán queda a 145.34 km. Para planear entregas se necesitan ubicaciones de entrega y datos de la red vial.
 
-La publicación automática con GitHub Pages está preparada, pero todavía no está
-activa. Un administrador del repositorio debe habilitarla en **Settings → Pages
-→ Build and deployment → Source: GitHub Actions**. Después de combinar estos
-cambios a `main`, el workflow probará el proyecto, regenerará el mapa y lo
-publicará sin que la computadora del equipo esté encendida en:
+## Implementación por semana
 
-https://sebastiangz.github.io/Sistema_de_Analisis_de_Patrones_Geoespaciales/
+| Semana | Evidencia |
+| --- | --- |
+| 1 · Cálculos geoespaciales | [`src/transforms.py`](src/transforms.py) calcula áreas y distancias y devuelve tablas nuevas. |
+| 2 · Procesamiento funcional | [`src/pipeline.py`](src/pipeline.py) encadena operaciones con `toolz.pipe` y aplica filtros currificados por propiedad y distancia. |
+| 3 · Agrupación y patrones | [`src/analysis.py`](src/analysis.py) clasifica por distancia y resume la cobertura. [Las pruebas](tests/test_analysis.py) verifican los límites de 20 y 40 km y los grupos vacíos. |
+| 4 · Visualización y documentación | [`src/visualization.py`](src/visualization.py) exporta el HTML con Folium. El mapa incluye una leyenda, un marcador de referencia y detalles por municipio. |
 
-La página y el mapa son públicos. El repositorio solo debe desplegar datos que
-se puedan compartir públicamente. El pipeline regenera `web/mapa.html` durante
-la publicación; el archivo generado no se guarda en Git.
+## Punto de partida de 2025
+
+Se ejecutó el commit `f3dbd2c` antes de modificar el proyecto.
+
+- Pasaron dos de tres pruebas. La descarga de Natural Earth falló por resolución DNS y el mismo ZIP cargó desde una copia local.
+- El flujo con `mapa.geojson` cargó los datos, filtró zonas comerciales y calculó sus áreas. Folium devolvió el mapa en memoria, pero el argumento `output_filename` no guardó el HTML.
+- La última celda del cuaderno arrojó un `TypeError`. Al llamar a `get_top_n_areas()` dentro de la composición, se obtuvo la tabla de África.
+- La base calculaba superficies con Mercator mundial y carecía del cálculo de distancias.
+
+## Reparto propuesto de trabajo
+
+| Módulo | Responsable propuesto | Pruebas |
+| --- | --- | --- |
+| Transformaciones | Miguel Alejandro Marcial Victorino | [`tests/test_transforms.py`](tests/test_transforms.py) |
+| Análisis | Diego Eduardo Araujo Manrique | [`tests/test_analysis.py`](tests/test_analysis.py) |
+| Visualización | Ambos integrantes | [`tests/test_visualization.py`](tests/test_visualization.py) |
+
+## Referencias académicas
+
+1. G. Molina León, M. Lischka y A. Breiter, “Mapping the Global South: Equal-Area Projections for Choropleth Maps”, *2020 IEEE Visualization Conference (VIS)*, pp. 91–95, 2020. Discute la elección de proyecciones equivalentes según el objetivo cartográfico. [Artículo en IEEE VIS](https://virtual.ieeevis.org/year/2020/paper_s-short-1236.html) · [DOI](https://doi.org/10.1109/VIS47514.2020.00025).
+2. F. Lei, A. Fan, A. M. MacEachren y R. Maciejewski, “GeoLinter: A Linting Framework for Choropleth Maps”, *IEEE Transactions on Visualization and Computer Graphics*, vol. 30, núm. 2, pp. 1592–1607, 2024. Aporta criterios sobre clasificación, contraste y unidades en mapas temáticos. [Artículo en IEEE VIS](https://content-staging.ieeevis.org/year/2024/paper_v-tvcg-20233322372.html) · [DOI](https://doi.org/10.1109/TVCG.2023.3322372).
+3. J. Dean y S. Ghemawat, “MapReduce: simplified data processing on large clusters”, *Communications of the ACM*, vol. 51, núm. 1, pp. 107–113, 2008. Describe cómo combinar transformaciones por registro con reducciones por grupo, el mismo patrón que aplica localmente el resumen municipal. [Artículo en ACM](https://dl.acm.org/doi/10.1145/1327452.1327492).

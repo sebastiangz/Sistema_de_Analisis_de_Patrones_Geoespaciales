@@ -1,15 +1,27 @@
-"""Executable end-to-end geospatial analysis pipeline."""
+"""Análisis de zonas y cobertura municipal de Colima."""
 
 import argparse
+from functools import partial
+from math import isfinite
 from pathlib import Path
 
 import geopandas as gpd
 from toolz import pipe
 
-from src.analysis import filter_by_property, get_top_n_areas
+from src.analysis import (
+    filter_by_max_distance,
+    filter_by_property,
+    get_top_n_areas,
+    group_by_distance,
+    summarize_distance_groups,
+)
 from src.geospatial import load_geojson
 from src.transforms import calculate_area_km2, calculate_distance_from_point_km
 from src.visualization import visualize_map
+
+
+DATASET = Path(__file__).resolve().parents[1] / 'data/input/colima.geojson'
+REFERENCE_POINT = (-103.724, 19.243)
 
 
 def run_analysis(
@@ -18,73 +30,96 @@ def run_analysis(
     zone_type: str | None = None,
     top_n: int = 5,
     reference_point: tuple[float, float] | None = None,
+    *,
+    max_distance_km: float | None = None,
 ) -> gpd.GeoDataFrame:
-    """Run the project analysis and save an interactive map as HTML."""
+    """Compone las transformaciones y guarda el mapa HTML."""
     data = load_geojson(str(input_path))
     if data.empty:
         raise ValueError(f"No features were found in '{input_path}'.")
     if data.crs is None:
         raise ValueError(f"The input dataset '{input_path}' must have a defined CRS.")
 
-    transforms = [calculate_area_km2]
+    operations = [calculate_area_km2]
     if reference_point is not None:
-        transforms.append(
-            lambda frame: calculate_distance_from_point_km(frame, reference_point)
-        )
-    if zone_type is not None:
-        transforms.append(filter_by_property("tipo_zona", zone_type))
-    transforms.append(get_top_n_areas(top_n))
+        operations.append(partial(calculate_distance_from_point_km, reference_point=reference_point))
 
-    result = pipe(data, *transforms)
+    map_options = {}
+    if max_distance_km is not None:
+        if not isfinite(max_distance_km) or max_distance_km < 0:
+            raise ValueError('El radio debe ser un número finito mayor o igual que cero.')
+        if reference_point is None:
+            raise ValueError('El análisis por radio requiere un punto de referencia.')
+        operations.extend((
+            filter_by_property('cve_ent', '06'),
+            filter_by_max_distance(max_distance_km),
+            group_by_distance,
+        ))
+        map_options = {'tiles': None, 'reference_point': reference_point[::-1]}
+    else:
+        if zone_type is not None:
+            operations.append(filter_by_property('tipo_zona', zone_type))
+        operations.append(get_top_n_areas(top_n))
+
+    result = pipe(data, *operations)
     if result.empty:
-        raise ValueError("No features matched the selected filters.")
+        if max_distance_km is not None:
+            raise ValueError('El radio indicado no incluye ningún centroide municipal de Colima.')
+        raise ValueError('No features matched the selected filters.')
+    if max_distance_km is not None:
+        result = result.sort_values('distance_km')
 
-    visualize_map(result, output_filename=str(output_path))
+    visualize_map(result, output_filename=output_path, **map_options)
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Analyze geospatial zones and create a map.")
-    parser.add_argument(
-        "--input",
-        default="data/input/mapa.geojson",
-        help="Input GeoJSON path (default: data/input/mapa.geojson).",
-    )
-    parser.add_argument(
-        "--output",
-        default="outputs/mapa_analisis.html",
-        help="Output HTML map path (default: outputs/mapa_analisis.html).",
-    )
-    parser.add_argument(
-        "--zone-type",
-        help="Optional value to filter the tipo_zona property, such as Comercial.",
-    )
-    parser.add_argument("--top-n", type=int, default=5, help="Number of largest zones to keep.")
-    parser.add_argument(
-        "--reference-point",
-        type=float,
-        nargs=2,
-        metavar=("LONGITUDE", "LATITUDE"),
-        help="Optional reference coordinate pair for distance_km.",
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
+    municipal = parser.add_argument_group('Cobertura municipal de Colima')
+    municipal.add_argument('--radio-km', type=float, help='Distancia máxima (60 km por defecto).')
+    municipal.add_argument('--salida', type=Path, help='Ruta del mapa municipal.')
+    demo = parser.add_argument_group('Demo configurable de zonas')
+    demo.add_argument('--zonas', action='store_true', help='Ejecuta la demo con sus valores predeterminados.')
+    demo.add_argument('--input', type=Path, help='GeoJSON de entrada de la demo.')
+    demo.add_argument('--output', type=Path, help='Ruta del mapa de la demo.')
+    demo.add_argument('--zone-type', help='Valor de la propiedad tipo_zona.')
+    demo.add_argument('--top-n', type=int, help='Cantidad máxima de zonas (5 por defecto).')
+    demo.add_argument('--reference-point', type=float, nargs=2, metavar=('LONGITUD', 'LATITUD'))
     args = parser.parse_args(argv)
+    demo_options = (args.input, args.output, args.zone_type, args.top_n, args.reference_point)
+    use_demo = args.zonas or any(option is not None for option in demo_options)
+    if use_demo and (args.radio_km is not None or args.salida is not None):
+        parser.error('Usa las opciones de cobertura municipal o las de la demo de zonas.')
 
-    result = run_analysis(
-        input_path=args.input,
-        output_path=args.output,
-        zone_type=args.zone_type,
-        top_n=args.top_n,
-        reference_point=tuple(args.reference_point) if args.reference_point else None,
-    )
-    print(f"Map saved to: {args.output}")
-    summary_columns = [
-        column
-        for column in ("id", "tipo_zona", "valor_estimado", "area_km2", "distance_km")
-        if column in result.columns
-    ]
-    print(result[summary_columns].to_string(index=False))
+    try:
+        if use_demo:
+            output = args.output or Path('outputs/mapa_analisis.html')
+            result = run_analysis(
+                args.input or Path('data/input/mapa.geojson'),
+                output,
+                zone_type=args.zone_type,
+                top_n=5 if args.top_n is None else args.top_n,
+                reference_point=tuple(args.reference_point) if args.reference_point else None,
+            )
+            columns = ('id', 'tipo_zona', 'valor_estimado', 'area_km2', 'distance_km')
+            print(result[[column for column in columns if column in result]].to_string(index=False))
+        else:
+            output = args.salida or Path('data/output/colima.html')
+            result = run_analysis(
+                DATASET,
+                output,
+                reference_point=REFERENCE_POINT,
+                max_distance_km=60 if args.radio_km is None else args.radio_km,
+            )
+            print(result[['nomgeo', 'area_km2', 'distance_km', 'distance_band']].round(2).to_string(index=False))
+            print('\nResumen por distancia')
+            print(summarize_distance_groups(result).round(2).to_string())
+    except ValueError as error:
+        parser.exit(1, f'{error}\n')
+
+    print(f'Mapa guardado en {output}')
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     raise SystemExit(main())

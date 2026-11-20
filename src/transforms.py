@@ -1,27 +1,18 @@
-# Modulo para transformaciones puras
-import math
+from math import isfinite
 
 import geopandas as gpd
-from shapely.geometry import Point
+from pyproj import Geod
 
 
-def _estimate_utm_crs(df: gpd.GeoDataFrame):
-    if df.crs is None:
-        raise ValueError("The GeoDataFrame must have a defined CRS.")
-
-    metric_crs = df.estimate_utm_crs()
-    if metric_crs is None:
-        raise ValueError("Could not determine a suitable UTM CRS for the GeoDataFrame.")
-    return metric_crs
-
+EQUAL_AREA_CRS = 'EPSG:6933'
 
 def calculate_area_km2(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """Función Pura: Calcula el área y la añade como nueva columna."""
-    metric_crs = _estimate_utm_crs(df)
+    if df.crs is None:
+        raise ValueError("The GeoDataFrame must have a defined CRS.")
     df_copy = df.copy()
-    df_copy["area_km2"] = df.to_crs(metric_crs).geometry.area / 1_000_000
+    df_copy['area_km2'] = df_copy.geometry.to_crs(EQUAL_AREA_CRS).area / 1_000_000
     return df_copy
-
 
 def calculate_distance_from_point_km(
     df: gpd.GeoDataFrame, reference_point: tuple[float, float]
@@ -45,24 +36,20 @@ def calculate_distance_from_point_km(
         raise ValueError("reference_point must contain numeric longitude and latitude.") from error
 
     if (
-        not math.isfinite(longitude)
-        or not math.isfinite(latitude)
+        not isfinite(longitude)
+        or not isfinite(latitude)
         or not -180 <= longitude <= 180
         or not -90 <= latitude <= 90
     ):
         raise ValueError("reference_point must contain valid longitude and latitude.")
 
-    reference = gpd.GeoDataFrame(
-        geometry=[Point(longitude, latitude)], crs="EPSG:4326"
+    centroids = df.geometry.to_crs(EQUAL_AREA_CRS).centroid.to_crs('EPSG:4326')
+    _, _, meters = Geod(ellps='WGS84').inv(
+        [longitude] * len(df), [latitude] * len(df),
+        centroids.x.to_list(), centroids.y.to_list(),
     )
-    metric_crs = reference.estimate_utm_crs()
-    if metric_crs is None:
-        raise ValueError("Could not determine a suitable UTM CRS for reference_point.")
+    return df.assign(distance_km=[value / 1_000 for value in meters])
 
-    projected_df = df.to_crs(metric_crs)
-    projected_reference = reference.to_crs(metric_crs).geometry.iloc[0]
-    result = df.copy()
-    result["distance_km"] = (
-        projected_df.geometry.centroid.distance(projected_reference) / 1000
-    )
-    return result
+def calculate_distance_km(df: gpd.GeoDataFrame, longitude: float, latitude: float) -> gpd.GeoDataFrame:
+    """Calcula la distancia geodésica desde un punto WGS 84 al centroide."""
+    return calculate_distance_from_point_km(df, (longitude, latitude))
