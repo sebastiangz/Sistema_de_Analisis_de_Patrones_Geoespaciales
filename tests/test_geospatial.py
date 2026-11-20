@@ -1,14 +1,16 @@
 # Prueba que la carga de datos funcione
-import pytest
+from pathlib import Path
+
 import geopandas as gpd
 from src.geospatial import load_geojson
 
-# Usamos una URL de prueba que sabemos que funciona
-URL_DATA_GOOD = "https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_countries.zip"
+DATASET = Path(__file__).resolve().parents[1] / 'data/input/colima.geojson'
 
 def test_load_geojson_returns_geodataframe():
-    result_gdf = load_geojson(URL_DATA_GOOD)
+    result_gdf = load_geojson(str(DATASET))
     assert isinstance(result_gdf, gpd.GeoDataFrame)
-    assert not result_gdf.empty
+    assert result_gdf.crs.to_epsg() == 6365
+    assert result_gdf['cvegeo'].nunique() == len(result_gdf) == 10
+    assert set(result_gdf['cve_ent']) == {'06'}
 
 print("Archivo 'tests/test_geospatial.py' CREADO.")

@@ -24,4 +24,8 @@ def filter_by_property(property_name: str, property_value: any):
             return gpd.GeoDataFrame()
     return inner_filter
 
-print("Archivo src/analysis.py creado.")
+def filter_by_max_distance(max_km: float):
+    """Devuelve un filtro que conserva filas a lo sumo a max_km."""
+    def inner_filter(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        return df[df['distance_km'] <= max_km].copy()
+    return inner_filter
