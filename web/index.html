@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Demostración interactiva del Sistema de Análisis de Patrones Geoespaciales.">
+    <title>SAPG | Demo geoespacial</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #17212b;
+        background: #f3f6f8;
+      }
+
+      * { box-sizing: border-box; }
+
+      body { margin: 0; }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem clamp(1rem, 4vw, 3rem);
+        background: #123047;
+        color: #fff;
+      }
+
+      h1 { margin: 0; font-size: clamp(1.1rem, 2.5vw, 1.6rem); }
+
+      header p {
+        margin: .25rem 0 0;
+        color: #d3e2ec;
+        font-size: .9rem;
+      }
+
+      .badge {
+        flex: 0 0 auto;
+        padding: .35rem .65rem;
+        border: 1px solid #9cb8c9;
+        border-radius: 999px;
+        font-size: .78rem;
+      }
+
+      main { padding: .75rem clamp(.5rem, 2vw, 1.25rem) 0; }
+
+      .notice {
+        margin: 0 0 .65rem;
+        color: #445563;
+        font-size: .85rem;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: calc(100vh - 145px);
+        min-height: 360px;
+        border: 1px solid #ccd6dd;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      footer {
+        padding: .6rem 1rem;
+        color: #52616b;
+        text-align: center;
+        font-size: .75rem;
+      }
+
+      @media (max-width: 560px) {
+        header { align-items: flex-start; }
+        .badge { margin-top: .2rem; }
+        iframe { height: calc(100vh - 170px); }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>SAPG · Análisis de Patrones Geoespaciales</h1>
+        <p>Demo: zonas comerciales, superficie y distancia a un punto de referencia</p>
+      </div>
+      <span class="badge">Datos ilustrativos</span>
+    </header>
+    <main>
+      <p class="notice">
+        Mapa demostrativo; no representa datos comerciales verificados. Las teselas base requieren conexión a Internet.
+      </p>
+      <iframe
+        src="./mapa.html"
+        title="Mapa interactivo de las zonas de demostración"
+        loading="eager"
+        allowfullscreen
+      ></iframe>
+    </main>
+    <footer>
+      El mapa muestra propiedades, áreas estimadas y distancias calculadas desde centroides.
+    </footer>
+  </body>
+</html>

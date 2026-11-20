@@ -23,4 +23,22 @@ def test_get_top_n_areas_curried(analysis_fixture):
     assert len(result_gdf) == 1
     assert result_gdf['id'].iloc[0] == 'C'
 
-print("Archivo 'tests/test_analysis.py' CREADO.")
+
+def test_filter_by_property_is_curried_and_does_not_mutate_input(analysis_fixture):
+    filter_commercial = filter_by_property("tipo_zona", "Comercial")
+
+    result = filter_commercial(analysis_fixture)
+
+    assert result["id"].tolist() == ["A", "C"]
+    assert len(analysis_fixture) == 2
+    assert result is not analysis_fixture
+
+
+def test_filter_by_property_reports_missing_column(analysis_fixture):
+    with pytest.raises(ValueError, match="missing|columna"):
+        filter_by_property("unknown", "value")(analysis_fixture)
+
+
+def test_get_top_n_areas_rejects_non_positive_count():
+    with pytest.raises(ValueError, match="positivo"):
+        get_top_n_areas(0)(gpd.GeoDataFrame())
