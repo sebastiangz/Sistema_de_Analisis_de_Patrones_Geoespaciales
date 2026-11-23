@@ -8,6 +8,29 @@ Proyecto final de Programación Funcional · Facultad de Ingeniería en Computac
 
 El sistema compara la cobertura de un centro de distribución hipotético en la ciudad de Colima. Calcula la superficie de cada municipio y la distancia desde el centro de distribución hasta su centroide. El resultado es una tabla de municipios, un resumen por distancia y un mapa interactivo.
 
+## Interfaz visual
+
+Para usar el análisis desde una interfaz gráfica en lugar de la terminal:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+La aplicación abre en el navegador. En **Cobertura municipal de Colima** puedes
+cambiar el radio y explorar el mapa, los municipios, las áreas y los grupos de
+distancia. En **Analizar GeoJSON** puedes usar el ejemplo o subir un
+`FeatureCollection` GeoJSON en WGS 84, filtrar por `tipo_zona`, elegir cuántas
+áreas mostrar y opcionalmente calcular distancias a un punto. Ambas vistas
+permiten descargar la tabla CSV y el mapa HTML. Los archivos subidos se procesan
+en memoria y no se guardan en el repositorio.
+
+Para dejar la interfaz accesible sin mantener tu computadora encendida, puedes
+desplegarla gratis desde [Streamlit Community Cloud](https://share.streamlit.io):
+inicia sesión con GitHub, selecciona este repositorio y la rama `main`, indica
+`app.py` como archivo principal y pulsa **Deploy**. El repositorio es público;
+no cargues información privada o que no tengas autorización para publicar.
+
 ## Ejecutar el análisis
 
 Desde la raíz del repositorio, con Python 3.12:

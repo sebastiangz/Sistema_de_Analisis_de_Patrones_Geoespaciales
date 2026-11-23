@@ -35,16 +35,39 @@ def run_analysis(
 ) -> gpd.GeoDataFrame:
     """Compone las transformaciones y guarda el mapa HTML."""
     data = load_geojson(str(input_path))
+    result = analyze_geodataframe(
+        data,
+        zone_type=zone_type,
+        top_n=top_n,
+        reference_point=reference_point,
+        max_distance_km=max_distance_km,
+    )
+
+    map_options = {}
+    if max_distance_km is not None:
+        map_options = {'tiles': None, 'reference_point': reference_point[::-1]}
+    visualize_map(result, output_filename=output_path, **map_options)
+    return result
+
+
+def analyze_geodataframe(
+    data: gpd.GeoDataFrame,
+    zone_type: str | None = None,
+    top_n: int = 5,
+    reference_point: tuple[float, float] | None = None,
+    *,
+    max_distance_km: float | None = None,
+) -> gpd.GeoDataFrame:
+    """Return analyzed features without modifying input data or writing files."""
     if data.empty:
-        raise ValueError(f"No features were found in '{input_path}'.")
+        raise ValueError('No features were found in the input data.')
     if data.crs is None:
-        raise ValueError(f"The input dataset '{input_path}' must have a defined CRS.")
+        raise ValueError('The input data must have a defined CRS.')
 
     operations = [calculate_area_km2]
     if reference_point is not None:
         operations.append(partial(calculate_distance_from_point_km, reference_point=reference_point))
 
-    map_options = {}
     if max_distance_km is not None:
         if not isfinite(max_distance_km) or max_distance_km < 0:
             raise ValueError('El radio debe ser un número finito mayor o igual que cero.')
@@ -55,7 +78,6 @@ def run_analysis(
             filter_by_max_distance(max_distance_km),
             group_by_distance,
         ))
-        map_options = {'tiles': None, 'reference_point': reference_point[::-1]}
     else:
         if zone_type is not None:
             operations.append(filter_by_property('tipo_zona', zone_type))
@@ -69,7 +91,6 @@ def run_analysis(
     if max_distance_km is not None:
         result = result.sort_values('distance_km')
 
-    visualize_map(result, output_filename=output_path, **map_options)
     return result
 
 
