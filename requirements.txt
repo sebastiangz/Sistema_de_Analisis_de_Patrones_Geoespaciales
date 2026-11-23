@@ -6,3 +6,5 @@ toolz
 pytest
 mapclassify
 matplotlib
+streamlit>=1.40,<2
+streamlit-folium>=0.24,<1
